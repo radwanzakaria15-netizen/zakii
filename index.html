@@ -84,29 +84,128 @@ text-align:center;
 <h1>Zaki</h1>
 <h2>موقع حساب المعدل</h2>
 
-<button onclick="showS1()">السداسي الأول</button>
-<button onclick="showS2()">السداسي الثاني</button>
-<button onclick="calcYear()">المعدل السنوي</button>
+<br>
 
-<div id="content"></div>
+<button onclick="openS1()">السداسي الأول</button>
+<button onclick="openS2()">السداسي الثاني</button>
+<button onclick="yearAverage()">المعدل السنوي</button>
+
+<div id="page"></div>
 
 <script>
 
 let s1=null
 let s2=null
 
-function template(sem){
+function semester(title,sem){
 
 return `
 <div class="container">
 
-<h2>${sem=="s1"?"السداسي الأول":"السداسي الثاني"}</h2>
+<h2>${title}</h2>
 
 <div class="cards">
 
 <div class="card">
 <h3>النحو</h3>
 <input type="number" id="tdnaho" placeholder="TD">
+<input type="number" id="examnaho" placeholder="Exam">
+</div>
+
+<div class="card">
+<h3>الصرف</h3>
+<input type="number" id="tdsrf" placeholder="TD">
+<input type="number" id="examsrf" placeholder="Exam">
+</div>
+
+<div class="card">
+<h3>الأدب</h3>
+<input type="number" id="tdadab" placeholder="TD">
+<input type="number" id="examadab" placeholder="Exam">
+</div>
+
+<div class="card">
+<h3>الرياضيات</h3>
+<input type="number" id="tdm" placeholder="TD">
+<input type="number" id="examm" placeholder="Exam">
+</div>
+
+<div class="card">
+<h3>الفيزياء</h3>
+<input type="number" id="tdf" placeholder="TD">
+<input type="number" id="examf" placeholder="Exam">
+</div>
+
+<div class="card">
+<h3>الكيمياء</h3>
+<input type="number" id="tdc" placeholder="TD">
+<input type="number" id="examc" placeholder="Exam">
+</div>
+
+</div>
+
+<br>
+
+<button onclick="calculate('${sem}')">احسب المعدل</button>
+
+<div class="result" id="result"></div>
+
+</div>
+`
+
+}
+
+function openS1(){
+document.getElementById("page").innerHTML=semester("السداسي الأول","s1")
+}
+
+function openS2(){
+document.getElementById("page").innerHTML=semester("السداسي الثاني","s2")
+}
+
+function calculate(sem){
+
+let naho=(tdnaho.value*0.33+examnaho.value*0.67)*2
+let srf=(tdsrf.value*0.33+examsrf.value*0.67)*2
+let adab=(tdadab.value*0.33+examadab.value*0.67)*2
+let math=(tdm.value*0.33+examm.value*0.67)*2
+let phys=(tdf.value*0.33+examf.value*0.67)*2
+let chem=(tdc.value*0.33+examc.value*0.67)*2
+
+let mo3adal=((naho+srf+adab+math+phys+chem)/12).toFixed(2)
+
+let msg=mo3adal>=10?"مبروك نجحت":"حاول أكثر"
+
+document.getElementById("result").innerHTML=
+`معدلك هو ${mo3adal}<br>${msg}`
+
+if(sem=="s1") s1=mo3adal
+if(sem=="s2") s2=mo3adal
+
+}
+
+function yearAverage(){
+
+if(s1 && s2){
+
+let year=((parseFloat(s1)+parseFloat(s2))/2).toFixed(2)
+
+document.getElementById("page").innerHTML=
+`<h1>المعدل السنوي: ${year}</h1>`
+
+}else{
+
+document.getElementById("page").innerHTML=
+`<h1>املأ السداسيين أولاً</h1>`
+
+}
+
+}
+
+</script>
+
+</body>
+</html><input type="number" id="tdnaho" placeholder="TD">
 <input type="number" id="examnaho" placeholder="Exam">
 </div>
 
