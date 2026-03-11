@@ -1,16 +1,8 @@
-from flask import Flask, request, render_template_string, redirect, url_for
-
-app = Flask(__name__)
-
-# تخزين البيانات
-stored_data = {
-    "s1": {},
-    "s2": {}
-}
-
-# ------------------ CSS ------------------
-
-style = """
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Zaki</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
@@ -82,687 +74,86 @@ font-size:26px;
 text-align:center;
 }
 </style>
-"""
-
-# ------------------ الصفحة الرئيسية ------------------
-
-home = """
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Zaki</title>
-""" + style + """
 </head>
-
 <body>
 
 <h1>Zaki</h1>
 <h2>موقع حساب المعدل</h2>
 
-<br>
-
-<a href="/s1"><button>السداسي الأول</button></a>
-<a href="/s2"><button>السداسي الثاني</button></a>
-<a href="/year"><button>المعدل السنوي</button></a>
-
-</body>
-</html>
-"""
-
-# ------------------ قالب السداسي ------------------
-
-s_template = """
-<html>
-<head>
-<meta charset="UTF-8">
-<title>{{title}}</title>
-""" + style + """
-</head>
-
-<body>
-
 <div class="container">
 
-<h2>{{title}}</h2>
+<h2>السداسي الأول</h2>
 
-<form method="post">
+<form id="gradeForm">
 
 <div class="cards">
 
 <div class="card">
 <h3>النحو</h3>
-<input type="number" name="tdnaho" placeholder="TD" value="{{data.get('tdnaho','')}}">
-<input type="number" name="examnaho" placeholder="Exam" value="{{data.get('examnaho','')}}">
+<input type="number" name="tdnaho" placeholder="TD">
+<input type="number" name="examnaho" placeholder="Exam">
 </div>
 
 <div class="card">
 <h3>الصرف</h3>
-<input type="number" name="tdsrf" placeholder="TD" value="{{data.get('tdsrf','')}}">
-<input type="number" name="examsrf" placeholder="Exam" value="{{data.get('examsrf','')}}">
+<input type="number" name="tdsrf" placeholder="TD">
+<input type="number" name="examsrf" placeholder="Exam">
 </div>
 
 <div class="card">
 <h3>الأدب</h3>
-<input type="number" name="tdadab" placeholder="TD" value="{{data.get('tdadab','')}}">
-<input type="number" name="examadab" placeholder="Exam" value="{{data.get('examadab','')}}">
+<input type="number" name="tdadab" placeholder="TD">
+<input type="number" name="examadab" placeholder="Exam">
 </div>
 
 <div class="card">
 <h3>الرياضيات</h3>
-<input type="number" name="tdm" placeholder="TD" value="{{data.get('tdm','')}}">
-<input type="number" name="examm" placeholder="Exam" value="{{data.get('examm','')}}">
+<input type="number" name="tdm" placeholder="TD">
+<input type="number" name="examm" placeholder="Exam">
 </div>
 
 <div class="card">
 <h3>الفيزياء</h3>
-<input type="number" name="tdf" placeholder="TD" value="{{data.get('tdf','')}}">
-<input type="number" name="examf" placeholder="Exam" value="{{data.get('examf','')}}">
+<input type="number" name="tdf" placeholder="TD">
+<input type="number" name="examf" placeholder="Exam">
 </div>
 
 <div class="card">
 <h3>الكيمياء</h3>
-<input type="number" name="tdc" placeholder="TD" value="{{data.get('tdc','')}}">
-<input type="number" name="examc" placeholder="Exam" value="{{data.get('examc','')}}">
+<input type="number" name="tdc" placeholder="TD">
+<input type="number" name="examc" placeholder="Exam">
 </div>
 
 </div>
 
 <br>
-
-<button type="submit">احسب المعدل</button>
+<button type="button" onclick="calculate()">احسب المعدل</button>
 
 </form>
 
-{% if mo3adal %}
-<div class="result">
-
-معدلك هو {{mo3adal}}
-
-<br>
-
-{{msg}}
-
-<br><br>
-
-<a href="/reset/{{sem}}"><button>إعادة الحساب</button></a>
-<a href="/"><button>الرئيسية</button></a>
-
-</div>
-{% endif %}
-
-</div>
-
-</body>
-</html>
-"""
-
-# ------------------ حساب المعدل ------------------
-
-def calc_s(data):
-
-    naho=(float(data["tdnaho"])*0.33+float(data["examnaho"])*0.67)*2
-    srf=(float(data["tdsrf"])*0.33+float(data["examsrf"])*0.67)*2
-    adab=(float(data["tdadab"])*0.33+float(data["examadab"])*0.67)*2
-    math=(float(data["tdm"])*0.33+float(data["examm"])*0.67)*2
-    phys=(float(data["tdf"])*0.33+float(data["examf"])*0.67)*2
-    chem=(float(data["tdc"])*0.33+float(data["examc"])*0.67)*2
-
-    return {
-    "n":naho,
-    "s":srf,
-    "a":adab,
-    "m":math,
-    "f":phys,
-    "c":chem
-    }
-
-# ------------------ الصفحة الرئيسية ------------------
-
-@app.route("/")
-def index():
-    return render_template_string(home)
-
-# ------------------ إعادة الحساب ------------------
-
-@app.route("/reset/<sem>")
-def reset(sem):
-    stored_data[sem]={}
-    return redirect(url_for(sem))
-
-# ------------------ السداسي الأول ------------------
-
-@app.route("/s1",methods=["GET","POST"])
-def s1():
-
-    mo3adal=None
-    msg=""
-
-    if request.method=="POST":
-
-        stored_data["s1"]=request.form.to_dict()
-
-        res=calc_s(stored_data["s1"])
-
-        mo3adal=round(sum(res.values())/12,2)
-
-        msg="مبروك نجحت" if mo3adal>=10 else "حاول أكثر"
-
-    return render_template_string(
-    s_template,
-    title="السداسي الأول",
-    data=stored_data["s1"],
-    mo3adal=mo3adal,
-    msg=msg,
-    sem="s1"
-    )
-
-# ------------------ السداسي الثاني ------------------
-
-@app.route("/s2",methods=["GET","POST"])
-def s2():
-
-    mo3adal=None
-    msg=""
-
-    if request.method=="POST":
-
-        stored_data["s2"]=request.form.to_dict()
-
-        res=calc_s(stored_data["s2"])
-
-        mo3adal=round(sum(res.values())/12,2)
-
-        msg="مبروك نجحت" if mo3adal>=10 else "يمكنك التعويض"
-
-    return render_template_string(
-    s_template,
-    title="السداسي الثاني",
-    data=stored_data["s2"],
-    mo3adal=mo3adal,
-    msg=msg,
-    sem="s2"
-    )
-
-# ------------------ المعدل السنوي ------------------
-
-@app.route("/year")
-def year():
-
-    mo3adal=None
-
-    if stored_data["s1"] and stored_data["s2"]:
-
-        r1=calc_s(stored_data["s1"])
-        r2=calc_s(stored_data["s2"])
-
-        mo3adal=round((sum(r1.values())+sum(r2.values()))/24,2)
-
-    if mo3adal:
-        return f"<h1 style='color:white'>المعدل السنوي: {mo3adal}</h1>"
-    else:
-        return "<h1 style='color:white'>املأ السداسيين أولاً</h1>"
-
-# ------------------
-
-if __name__=="__main__":
-    app.run(host="0.0.0.0",port=5000)<button onclick="calculate('${sem}')">احسب المعدل</button>
-
 <div class="result" id="result"></div>
 
 </div>
-`
-
-}
-
-function openS1(){
-document.getElementById("page").innerHTML=semester("السداسي الأول","s1")
-}
-
-function openS2(){
-document.getElementById("page").innerHTML=semester("السداسي الثاني","s2")
-}
-
-function calculate(sem){
-
-let naho=(tdnaho.value*0.33+examnaho.value*0.67)*2
-let srf=(tdsrf.value*0.33+examsrf.value*0.67)*2
-let adab=(tdadab.value*0.33+examadab.value*0.67)*2
-let math=(tdm.value*0.33+examm.value*0.67)*2
-let phys=(tdf.value*0.33+examf.value*0.67)*2
-let chem=(tdc.value*0.33+examc.value*0.67)*2
-
-let mo3adal=((naho+srf+adab+math+phys+chem)/12).toFixed(2)
-
-let msg=mo3adal>=10?"مبروك نجحت":"حاول أكثر"
-
-document.getElementById("result").innerHTML=
-`معدلك هو ${mo3adal}<br>${msg}`
-
-if(sem=="s1") s1=mo3adal
-if(sem=="s2") s2=mo3adal
-
-}
-
-function yearAverage(){
-
-if(s1 && s2){
-
-let year=((parseFloat(s1)+parseFloat(s2))/2).toFixed(2)
-
-document.getElementById("page").innerHTML=
-`<h1>المعدل السنوي: ${year}</h1>`
-
-}else{
-
-document.getElementById("page").innerHTML=
-`<h1>املأ السداسيين أولاً</h1>`
-
-}
-
-}
-
-</script>
-
-</body>
-</html><input type="number" id="tdnaho" placeholder="TD">
-<input type="number" id="examnaho" placeholder="Exam">
-</div>
-
-<div class="card">
-<h3>الصرف</h3>
-<input type="number" id="tdsrf" placeholder="TD">
-<input type="number" id="examsrf" placeholder="Exam">
-</div>
-
-<div class="card">
-<h3>الأدب</h3>
-<input type="number" id="tdadab" placeholder="TD">
-<input type="number" id="examadab" placeholder="Exam">
-</div>
-
-<div class="card">
-<h3>الرياضيات</h3>
-<input type="number" id="tdm" placeholder="TD">
-<input type="number" id="examm" placeholder="Exam">
-</div>
-
-<div class="card">
-<h3>الفيزياء</h3>
-<input type="number" id="tdf" placeholder="TD">
-<input type="number" id="examf" placeholder="Exam">
-</div>
-
-<div class="card">
-<h3>الكيمياء</h3>
-<input type="number" id="tdc" placeholder="TD">
-<input type="number" id="examc" placeholder="Exam">
-</div>
-
-</div>
-
-<br>
-
-<button onclick="calc('${sem}')">احسب المعدل</button>
-
-<div class="result" id="result"></div>
-
-</div>
-`
-
-}
-
-function showS1(){
-document.getElementById("content").innerHTML=template("s1")
-}
-
-function showS2(){
-document.getElementById("content").innerHTML=template("s2")
-}
-
-function calc(sem){
-
-let naho=(parseFloat(tdnaho.value||0)*0.33+parseFloat(examnaho.value||0)*0.67)*2
-let srf=(parseFloat(tdsrf.value||0)*0.33+parseFloat(examsrf.value||0)*0.67)*2
-let adab=(parseFloat(tdadab.value||0)*0.33+parseFloat(examadab.value||0)*0.67)*2
-let math=(parseFloat(tdm.value||0)*0.33+parseFloat(examm.value||0)*0.67)*2
-let phys=(parseFloat(tdf.value||0)*0.33+parseFloat(examf.value||0)*0.67)*2
-let chem=(parseFloat(tdc.value||0)*0.33+parseFloat(examc.value||0)*0.67)*2
-
-let mo3adal=((naho+srf+adab+math+phys+chem)/12).toFixed(2)
-
-let msg=mo3adal>=10?"مبروك نجحت":"حاول أكثر"
-
-document.getElementById("result").innerHTML=
-`معدلك هو ${mo3adal}<br>${msg}`
-
-if(sem=="s1") s1=mo3adal
-if(sem=="s2") s2=mo3adal
-
-}
-
-function calcYear(){
-
-if(s1 && s2){
-
-let year=((parseFloat(s1)+parseFloat(s2))/2).toFixed(2)
-
-document.getElementById("content").innerHTML=
-`<h1>المعدل السنوي: ${year}</h1>`
-
-}else{
-
-document.getElementById("content").innerHTML=
-`<h1>املأ السداسيين أولاً</h1>`
-
-}
-
-}
-
-</script>
-
-</body>
-</html>
-.cards{
-display:flex;
-flex-wrap:wrap;
-gap:20px;
-justify-content:center;
-}
-
-.card{
-background:rgba(255,255,255,0.05);
-padding:20px;
-border-radius:20px;
-width:230px;
-text-align:center;
-}
-
-.card input{
-width:40%;
-padding:10px;
-margin:5px;
-border:none;
-border-radius:10px;
-text-align:center;
-background:rgba(255,255,255,0.15);
-color:white;
-}
-
-button{
-padding:12px 25px;
-border:none;
-border-radius:20px;
-background:linear-gradient(90deg,#00ffff,#0072ff);
-cursor:pointer;
-font-weight:bold;
-margin:5px;
-}
-
-.result{
-margin-top:25px;
-font-size:26px;
-text-align:center;
-}
-
-</style>
-</head>
-
-<body>
-
-<h1>Zaki</h1>
-<h2>موقع حساب المعدل</h2>
-
-<button onclick="show('s1')">السداسي الأول</button>
-<button onclick="show('s2')">السداسي الثاني</button>
-
-<div id="content"></div>
 
 <script>
+function calculate(){
+  const form = document.getElementById('gradeForm');
+  const data = Object.fromEntries(new FormData(form));
+  let keys = ["tdnaho","examnaho","tdsrf","examsrf","tdadab","examadab","tdm","examm","tdf","examf","tdc","examc"];
+  let sum = 0;
 
-function subject(name){
+  for(let i=0;i<keys.length;i+=2){
+    let td = parseFloat(data[keys[i]]) || 0;
+    let exam = parseFloat(data[keys[i+1]]) || 0;
+    sum += (td*0.33 + exam*0.67)*2;
+  }
 
-return `
-<div class="card">
-<h3>${name}</h3>
-<input type="number" class="td" placeholder="TD">
-<input type="number" class="exam" placeholder="Exam">
-</div>
-`
+  let average = (sum/12).toFixed(2);
+  let msg = average >= 10 ? "مبروك نجحت" : "حاول أكثر";
 
+  document.getElementById('result').innerHTML = `معدلك هو ${average}<br>${msg}`;
 }
-
-function show(sem){
-
-document.getElementById("content").innerHTML=`
-
-<div class="container">
-
-<h2>${sem=="s1"?"السداسي الأول":"السداسي الثاني"}</h2>
-
-<div class="cards">
-
-${subject("النحو")}
-${subject("الصرف")}
-${subject("الأدب")}
-${subject("الرياضيات")}
-${subject("الفيزياء")}
-${subject("الكيمياء")}
-
-</div>
-
-<br>
-
-<button onclick="calc()">احسب المعدل</button>
-
-<div class="result" id="result"></div>
-
-</div>
-
-`
-
-}
-
-function calc(){
-
-let tds=document.querySelectorAll(".td")
-let exams=document.querySelectorAll(".exam")
-
-let sum=0
-
-for(let i=0;i<tds.length;i++){
-
-let td=parseFloat(tds[i].value)||0
-let ex=parseFloat(exams[i].value)||0
-
-let m=(td*0.33+ex*0.67)*2
-
-sum+=m
-
-}
-
-let mo3adal=(sum/12).toFixed(2)
-
-let msg=mo3adal>=10?"مبروك نجحت":"حاول أكثر"
-
-document.getElementById("result").innerHTML=
-
-`معدلك هو ${mo3adal}<br>${msg}`
-
-}
-
 </script>
 
 </body>
-</html>    background: rgba(0,0,0,0.6);  
-    border-radius:25px;  
-    box-shadow:0 10px 30px rgba(0,0,0,0.5);  
-    text-align:center;  
-}  
-
-h2{  
-    color:#00ffff;  
-    margin-bottom:25px;  
-    text-shadow:0 0 10px #00ffff;  
-}  
-h3{margin:15px 0 5px;}  
-
-input{  
-    width:45%;  
-    padding:12px;  
-    margin:6px 2%;  
-    border-radius:12px;  
-    border:none;  
-    background:rgba(255,255,255,0.1);  
-    color:#fff;  
-    text-align:center;  
-    transition:0.2s;  
-}  
-input:focus{  
-    background:rgba(0,255,255,0.15);  
-    box-shadow:0 0 10px #00ffff;  
-    transform:scale(1.02);  
-    outline:none;  
-}  
-
-button{  
-    padding:12px 25px;  
-    margin-top:20px;  
-    border:none;  
-    border-radius:18px;  
-    font-weight:bold;  
-    background: linear-gradient(90deg,#00ffff,#0072ff);  
-    color:#1b1b2f;  
-    cursor:pointer;  
-    transition:0.3s;  
-}  
-button:hover{  
-    transform:scale(1.05);  
-    box-shadow:0 0 15px #00ffff;  
-}  
-
-.result{  
-    margin-top:25px;  
-    font-size:26px;  
-    font-weight:bold;  
-    color:#ffdf00;  
-    text-shadow:0 0 12px #ffdf00;  
-    padding:15px;  
-    border-radius:18px;  
-    background: rgba(255,255,255,0.05);  
-}  
-
-a.reset-btn{  
-    display:inline-block;  
-    margin-top:15px;  
-    padding:12px 25px;  
-    background: linear-gradient(90deg,#0072ff,#00ffff);  
-    color:#1b1b2f;  
-    border-radius:15px;  
-    font-weight:bold;  
-    text-decoration:none;  
-    transition:0.3s;  
-}  
-a.reset-btn:hover{  
-    transform:scale(1.05);  
-    box-shadow:0 0 15px #00ffff;  
-}  
-
-.footer{margin-top:20px;color:#ccc;font-size:14px;}  
-</style>  
-</head>  
-<body>  
-<div class="container">  
-<h2>📊 حساب معدل السداسي (ملمح ابتدائي)</h2>  
-<form method="post">  
-<h3>النحو</h3><input name="tdnaho" placeholder="TD" required><input name="examnaho" placeholder="Exam" required>  
-<h3>الصرف</h3><input name="tdsrf" placeholder="TD" required><input name="examsrf" placeholder="Exam" required>  
-<h3>الأدب</h3><input name="tdadab" placeholder="TD" required><input name="examadab" placeholder="Exam" required>  
-<h3>الرياضيات</h3><input name="tdm" placeholder="TD" required><input name="examm" placeholder="Exam" required>  
-<h3>الفيزياء</h3><input name="tdf" placeholder="TD" required><input name="examf" placeholder="Exam" required>  
-<h3>الكيمياء</h3><input name="tdc" placeholder="TD" required><input name="examc" placeholder="Exam" required>  
-<h3>الشريعة</h3><input name="examchari3a" placeholder="Exam" required>  
-<h3>التكنولوجيا</h3><input name="tdticno" placeholder="TD" required><input name="examticno" placeholder="Exam" required>  
-<h3>مواد أخرى</h3>  
-<input name="b" placeholder="البلاغة" required>  
-<input name="e" placeholder="الانجليزية" required>  
-<input name="i" placeholder="الإملاء" required>  
-<input name="y" placeholder="فنيات الكتابة" required>  
-<br><br>  
-<button type="submit">احسب المعدل</button>  
-</form>  
-  
-{% if mo3adal %}  
-<div class="result">  
-🔥 معدلك هو: {{ mo3adal }} 🔥<br>{{ msg }}  
-</div>  
-<a href="/" class="reset-btn">🔄 إعادة الحساب</a>  
-{% endif %}  
-  
-<div class="footer">© zaki</div>  
-</div>  
-</body>  
-</html>  
-'''  
-  
-@app.route("/", methods=["GET","POST"])  
-def index():  
-    mo3adal = None  
-    msg = ""  
-    if request.method == "POST":  
-        tdnaho=float(request.form["tdnaho"])  
-        examnaho=float(request.form["examnaho"])  
-        notnaho=tdnaho*0.33+examnaho*0.67  
-        n=notnaho*2  
-  
-        tdsrf=float(request.form["tdsrf"])  
-        examsrf=float(request.form["examsrf"])  
-        notsrf=tdsrf*0.33+examsrf*0.67  
-        s=notsrf*2  
-  
-        tdadab=float(request.form["tdadab"])  
-        examadab=float(request.form["examadab"])  
-        notadab=tdadab*0.33+examadab*0.67  
-        a=notadab*2  
-  
-        tdm=float(request.form["tdm"])  
-        examm=float(request.form["examm"])  
-        notm=tdm*0.33+examm*0.67  
-        m=notm*2  
-  
-        tdf=float(request.form["tdf"])  
-        examf=float(request.form["examf"])  
-        notf=tdf*0.33+examf*0.67  
-        f=notf*2  
-  
-        tdc=float(request.form["tdc"])  
-        examc=float(request.form["examc"])  
-        notc=tdc*0.33+examc*0.67  
-        c=notc*2  
-  
-        examchari3a=float(request.form["examchari3a"])  
-        ch=examchari3a*2  
-  
-        tdticno=float(request.form["tdticno"])  
-        examticno=float(request.form["examticno"])  
-        ticno=tdticno*0.33+examticno*0.67  
-        t=ticno  
-  
-        b=float(request.form["b"])  
-        e=float(request.form["e"])  
-        i=float(request.form["i"])  
-        y=float(request.form["y"])  
-  
-        majmo3=n+s+a+m+f+c+ch+t+b+e+i+y  
-        mo3adal=round(majmo3/19,2)  
-  
-        if mo3adal >= 10:  
-            if mo3adal > 15:  
-                msg = "🎉 ألف مبروك، معدلك ممتاز!"  
-            else:  
-                msg = "✅ مبروك، راك نجحت!"  
-        else:  
-            msg = "❌ لا تقلق، مزال السداسي الثاني"  
-  
-    return render_template_string(html, mo3adal=mo3adal, msg=msg)  
-  
-app.run(host="0.0.0.0", port=5000)
+</html>
