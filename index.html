@@ -2,151 +2,152 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>Zaki</title>
+<title>Zaki - حساب المعدل</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
 body{
-font-family:'Cairo',sans-serif;
-margin:0;
-background:linear-gradient(-45deg,#1b1b2f,#4e54c8,#00c6ff,#0072ff);
-background-size:400% 400%;
-animation:gradientMove 25s ease infinite;
-color:white;
-display:flex;
-flex-direction:column;
-align-items:center;
+  font-family:'Cairo',sans-serif;
+  background:linear-gradient(-45deg,#1b1b2f,#4e54c8,#00c6ff,#0072ff);
+  background-size:400% 400%;
+  animation:gradient 20s ease infinite;
+  color:white;
+  margin:0;
 }
 
-@keyframes gradientMove{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
+@keyframes gradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
 }
 
 .container{
-max-width:900px;
-width:95%;
-background:rgba(0,0,0,0.6);
-padding:30px;
-border-radius:25px;
-margin-top:40px;
+  max-width:900px;
+  margin:auto;
+  padding:30px;
+  text-align:center;
 }
 
 .cards{
-display:flex;
-flex-wrap:wrap;
-gap:20px;
-justify-content:center;
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
 }
 
 .card{
-background:rgba(255,255,255,0.05);
-padding:20px;
-border-radius:20px;
-width:230px;
-text-align:center;
+  background:rgba(0,0,0,0.5);
+  padding:20px;
+  border-radius:20px;
+  width:220px;
 }
 
 .card input{
-width:40%;
-padding:10px;
-margin:5px;
-border:none;
-border-radius:10px;
-text-align:center;
-background:rgba(255,255,255,0.15);
-color:white;
+  width:40%;
+  padding:8px;
+  margin:5px;
+  border:none;
+  border-radius:10px;
+  text-align:center;
 }
 
 button{
-padding:12px 25px;
-border:none;
-border-radius:20px;
-background:linear-gradient(90deg,#00ffff,#0072ff);
-cursor:pointer;
-font-weight:bold;
+  padding:12px 25px;
+  border:none;
+  border-radius:20px;
+  background:#00ffff;
+  font-weight:bold;
+  cursor:pointer;
+  margin:5px;
 }
 
 .result{
-margin-top:25px;
-font-size:26px;
-text-align:center;
+  margin-top:20px;
+  font-size:25px;
+  font-weight:bold;
 }
 </style>
 </head>
 <body>
 
-<h1>Zaki</h1>
-<h2>موقع حساب المعدل</h2>
-
 <div class="container">
+  <h1>Zaki</h1>
+  <h2>📊 موقع حساب المعدل</h2>
 
-<h2>السداسي الأول</h2>
+  <h2>السداسي الأول</h2>
 
-<form id="gradeForm">
+  <form id="semesterForm">
 
-<div class="cards">
+    <div class="cards">
 
-<div class="card">
-<h3>النحو</h3>
-<input type="number" name="tdnaho" placeholder="TD">
-<input type="number" name="examnaho" placeholder="Exam">
-</div>
+      <div class="card">
+        <h3>النحو</h3>
+        <input type="number" name="tdnaho" placeholder="TD" min="0" max="20" step="0.01">
+        <input type="number" name="examnaho" placeholder="Exam" min="0" max="20" step="0.01">
+      </div>
 
-<div class="card">
-<h3>الصرف</h3>
-<input type="number" name="tdsrf" placeholder="TD">
-<input type="number" name="examsrf" placeholder="Exam">
-</div>
+      <div class="card">
+        <h3>الصرف</h3>
+        <input type="number" name="tdsrf" placeholder="TD" min="0" max="20" step="0.01">
+        <input type="number" name="examsrf" placeholder="Exam" min="0" max="20" step="0.01">
+      </div>
 
-<div class="card">
-<h3>الأدب</h3>
-<input type="number" name="tdadab" placeholder="TD">
-<input type="number" name="examadab" placeholder="Exam">
-</div>
+      <div class="card">
+        <h3>الأدب</h3>
+        <input type="number" name="tdadab" placeholder="TD" min="0" max="20" step="0.01">
+        <input type="number" name="examadab" placeholder="Exam" min="0" max="20" step="0.01">
+      </div>
 
-<div class="card">
-<h3>الرياضيات</h3>
-<input type="number" name="tdm" placeholder="TD">
-<input type="number" name="examm" placeholder="Exam">
-</div>
+      <div class="card">
+        <h3>الرياضيات</h3>
+        <input type="number" name="tdm" placeholder="TD" min="0" max="20" step="0.01">
+        <input type="number" name="examm" placeholder="Exam" min="0" max="20" step="0.01">
+      </div>
 
-<div class="card">
-<h3>الفيزياء</h3>
-<input type="number" name="tdf" placeholder="TD">
-<input type="number" name="examf" placeholder="Exam">
-</div>
+      <div class="card">
+        <h3>الفيزياء</h3>
+        <input type="number" name="tdf" placeholder="TD" min="0" max="20" step="0.01">
+        <input type="number" name="examf" placeholder="Exam" min="0" max="20" step="0.01">
+      </div>
 
-<div class="card">
-<h3>الكيمياء</h3>
-<input type="number" name="tdc" placeholder="TD">
-<input type="number" name="examc" placeholder="Exam">
-</div>
+      <div class="card">
+        <h3>الكيمياء</h3>
+        <input type="number" name="tdc" placeholder="TD" min="0" max="20" step="0.01">
+        <input type="number" name="examc" placeholder="Exam" min="0" max="20" step="0.01">
+      </div>
 
-</div>
+    </div>
 
-<br>
-<button type="button" onclick="calculate()">احسب المعدل</button>
+    <br>
+    <button type="button" onclick="calculateAverage()">احسب المعدل</button>
 
-</form>
+  </form>
 
-<div class="result" id="result"></div>
-
+  <div class="result" id="result"></div>
 </div>
 
 <script>
-function calculate(){
-  const form = document.getElementById('gradeForm');
+function calculateAverage(){
+  const form = document.getElementById('semesterForm');
   const data = Object.fromEntries(new FormData(form));
-  let keys = ["tdnaho","examnaho","tdsrf","examsrf","tdadab","examadab","tdm","examm","tdf","examf","tdc","examc"];
-  let sum = 0;
+  let subjects = ["tdnaho","examnaho","tdsrf","examsrf","tdadab","examadab","tdm","examm","tdf","examf","tdc","examc"];
+  let total = 0;
 
-  for(let i=0;i<keys.length;i+=2){
-    let td = parseFloat(data[keys[i]]) || 0;
-    let exam = parseFloat(data[keys[i+1]]) || 0;
-    sum += (td*0.33 + exam*0.67)*2;
+  for(let i=0;i<subjects.length;i+=2){
+    let td = parseFloat(data[subjects[i]]) || 0;
+    let exam = parseFloat(data[subjects[i+1]]) || 0;
+    total += (td*0.33 + exam*0.67);
   }
+
+  let average = (total/6).toFixed(2);
+  let msg = average >= 10 ? "✅ مبروك نجحت" : "❌ حاول أكثر";
+
+  document.getElementById('result').innerHTML = `🔥 معدلك هو ${average}<br>${msg}`;
+}
+</script>
+
+</body>
+</html>  }
 
   let average = (sum/12).toFixed(2);
   let msg = average >= 10 ? "مبروك نجحت" : "حاول أكثر";
