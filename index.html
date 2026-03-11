@@ -1,40 +1,172 @@
-from flask import Flask, request, render_template_string  
-  
-app = Flask(__name__)  
-  
-html = '''  
-<!DOCTYPE html>  
-<html>  
-<head>  
-<meta charset="UTF-8">  
-<title>حساب معدل السداسي (ملمح ابتدائي)</title>  
-<style>  
-body, html {  
-    margin:0;  
-    padding:0;  
-    font-family:'Segoe UI',sans-serif;  
-    height:100%;  
-    color:#fff;  
-    overflow-x:hidden;  
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Zaki</title>
 
-    /* الخلفية المتحركة الأصلية */  
-    background: linear-gradient(135deg, #4a00e0, #8e2de2, #00c6ff, #0072ff);  
-    background-size: 400% 400%;  
-    animation: gradientMove 30s ease infinite;  
-}  
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
-@keyframes gradientMove {  
-    0%{background-position:0% 50%;}  
-    50%{background-position:100% 50%;}  
-    100%{background-position:0% 50%;}  
-}  
+<style>
 
-.container{  
-    max-width:700px;  
-    width:90%;  
-    margin:50px auto;  
-    padding:30px;  
-    background: rgba(0,0,0,0.6);  
+body{
+font-family:'Cairo',sans-serif;
+margin:0;
+background:linear-gradient(-45deg,#1b1b2f,#4e54c8,#00c6ff,#0072ff);
+background-size:400% 400%;
+animation:gradientMove 25s ease infinite;
+color:white;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+@keyframes gradientMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.container{
+max-width:900px;
+width:95%;
+background:rgba(0,0,0,0.6);
+padding:30px;
+border-radius:25px;
+margin-top:40px;
+}
+
+.cards{
+display:flex;
+flex-wrap:wrap;
+gap:20px;
+justify-content:center;
+}
+
+.card{
+background:rgba(255,255,255,0.05);
+padding:20px;
+border-radius:20px;
+width:230px;
+text-align:center;
+}
+
+.card input{
+width:40%;
+padding:10px;
+margin:5px;
+border:none;
+border-radius:10px;
+text-align:center;
+background:rgba(255,255,255,0.15);
+color:white;
+}
+
+button{
+padding:12px 25px;
+border:none;
+border-radius:20px;
+background:linear-gradient(90deg,#00ffff,#0072ff);
+cursor:pointer;
+font-weight:bold;
+margin:5px;
+}
+
+.result{
+margin-top:25px;
+font-size:26px;
+text-align:center;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Zaki</h1>
+<h2>موقع حساب المعدل</h2>
+
+<button onclick="show('s1')">السداسي الأول</button>
+<button onclick="show('s2')">السداسي الثاني</button>
+
+<div id="content"></div>
+
+<script>
+
+function subject(name){
+
+return `
+<div class="card">
+<h3>${name}</h3>
+<input type="number" class="td" placeholder="TD">
+<input type="number" class="exam" placeholder="Exam">
+</div>
+`
+
+}
+
+function show(sem){
+
+document.getElementById("content").innerHTML=`
+
+<div class="container">
+
+<h2>${sem=="s1"?"السداسي الأول":"السداسي الثاني"}</h2>
+
+<div class="cards">
+
+${subject("النحو")}
+${subject("الصرف")}
+${subject("الأدب")}
+${subject("الرياضيات")}
+${subject("الفيزياء")}
+${subject("الكيمياء")}
+
+</div>
+
+<br>
+
+<button onclick="calc()">احسب المعدل</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+`
+
+}
+
+function calc(){
+
+let tds=document.querySelectorAll(".td")
+let exams=document.querySelectorAll(".exam")
+
+let sum=0
+
+for(let i=0;i<tds.length;i++){
+
+let td=parseFloat(tds[i].value)||0
+let ex=parseFloat(exams[i].value)||0
+
+let m=(td*0.33+ex*0.67)*2
+
+sum+=m
+
+}
+
+let mo3adal=(sum/12).toFixed(2)
+
+let msg=mo3adal>=10?"مبروك نجحت":"حاول أكثر"
+
+document.getElementById("result").innerHTML=
+
+`معدلك هو ${mo3adal}<br>${msg}`
+
+}
+
+</script>
+
+</body>
+</html>    background: rgba(0,0,0,0.6);  
     border-radius:25px;  
     box-shadow:0 10px 30px rgba(0,0,0,0.5);  
     text-align:center;  
